@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "794072425892",
+    "project_id": "notes-f3caa",
+    "storage_bucket": "notes-f3caa.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:794072425892:android:6ce99f21df0978b88fcd31",
+        "android_client_info": {
+          "package_name": "com.smithmicro.notes"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAqa4DhNgZRnZOtzqn1JG_uU651SzhUpfs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
