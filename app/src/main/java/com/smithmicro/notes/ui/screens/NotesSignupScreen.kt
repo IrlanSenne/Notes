@@ -1,7 +1,9 @@
 package com.smithmicro.notes.ui.screens
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -9,8 +11,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Button
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
@@ -26,6 +28,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -34,6 +38,7 @@ import com.smithmicro.notes.MainViewModel
 import com.smithmicro.notes.R
 import com.smithmicro.notes.Routes
 import com.smithmicro.notes.data.Resource
+import com.smithmicro.notes.ui.composables.NoteLoading
 import com.smithmicro.notes.ui.composables.NotesTextField
 import kotlinx.coroutines.launch
 
@@ -50,6 +55,9 @@ fun NotesSignupScreen(
     val coroutineScope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
 
+    var hasAttemptedSignup by remember { mutableStateOf(false) }
+    val focusManager = LocalFocusManager.current
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
@@ -57,11 +65,25 @@ fun NotesSignupScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .background(Color.White)
-                .padding(horizontal = 16.dp),
+                .padding(horizontal = 16.dp)
+                .clickable(
+                    interactionSource = MutableInteractionSource(),
+                    indication = null
+                ) {
+                    focusManager.clearFocus()
+                },
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
             Spacer(modifier = Modifier.height(16.dp))
+            Image(
+                painter = painterResource(id = R.drawable.ic_signup),
+                contentDescription = "-",
+                modifier = Modifier
+                    .size(148.dp)
+                    .padding(bottom = 32.dp)
+            )
+
             NotesTextField(username, { username = it }, stringResource(id = R.string.username))
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -71,11 +93,12 @@ fun NotesSignupScreen(
             NotesTextField(password, { password = it }, stringResource(id = R.string.password), true)
 
             Spacer(modifier = Modifier.height(16.dp))
-
             Button(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
+                    hasAttemptedSignup = true
                     viewModel?.signupUser(username, email, password)
+                    focusManager.clearFocus()
                 }
             ) {
                 Text(
@@ -85,7 +108,6 @@ fun NotesSignupScreen(
             }
 
             Spacer(modifier = Modifier.height(16.dp))
-
             Text(
                 modifier = Modifier.clickable {
                     navController.navigateUp()
@@ -95,26 +117,29 @@ fun NotesSignupScreen(
                 textAlign = TextAlign.Center,
                 color = MaterialTheme.colorScheme.onSurface
             )
+        }
 
-            authResource?.value?.let {
-                when (it) {
-                    is Resource.Failure -> {
+        authResource?.value?.let {
+            when (it) {
+                is Resource.Failure -> {
+                    if (hasAttemptedSignup) {
                         coroutineScope.launch {
                             snackbarHostState.showSnackbar(
                                 message = it.exception.message.toString(),
                                 actionLabel = "Close"
                             )
                         }
+                        hasAttemptedSignup = false
                     }
+                }
 
-                    is Resource.Loading -> {
-                        CircularProgressIndicator()
-                    }
+                is Resource.Loading -> {
+                    NoteLoading()
+                }
 
-                    is Resource.Success -> {
-                        navController.navigate(Routes.HOME) {
-                            popUpTo(Routes.SIGNUP) { inclusive = true }
-                        }
+                is Resource.Success -> {
+                    navController.navigate(Routes.HOME) {
+                        popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 }
             }

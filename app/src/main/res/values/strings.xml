@@ -8,4 +8,10 @@
     <string name="username">Username</string>
     <string name="already_have_account">Already have account?</string>
     <string name="register">Register</string>
+    <string name="notes">My notes</string>
+    <string name="my_notes">ADD NOTE</string>
+    <string name="add">ADD</string>
+    <string name="title">Title</string>
+    <string name="content">Content</string>
+    <string name="delete">Delete</string>
 </resources>
