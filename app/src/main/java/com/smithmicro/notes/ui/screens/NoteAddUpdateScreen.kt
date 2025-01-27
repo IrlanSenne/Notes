@@ -32,10 +32,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.smithmicro.notes.MainViewModel
 import com.smithmicro.notes.R
+import com.smithmicro.notes.Routes.Companion.NEW_NOTE
 import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.data.entities.NoteEntity
+import com.smithmicro.notes.ui.composables.NoteColorPicker
 import com.smithmicro.notes.ui.composables.NoteLoading
 import com.smithmicro.notes.ui.composables.NoteTopBar
+import com.smithmicro.notes.utils.colorToHex
+import com.smithmicro.notes.utils.hexToColor
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
@@ -47,7 +51,8 @@ fun NoteAddScreen(
     navController: NavController,
     noteId: String? = null,
     noteTitle: String? = null,
-    noteContent: String? = null
+    noteContent: String? = null,
+    noteColor: String? = null
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -61,11 +66,14 @@ fun NoteAddScreen(
     var isErrorTitle by remember { mutableStateOf(false) }
     var isErrorContent by remember { mutableStateOf(false) }
 
+    var selectedColor by remember { mutableStateOf(hexToColor(noteColor ?: "#FFFFFFFF")) }
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             NoteTopBar(
                 title = stringResource(R.string.my_notes),
+                colorBackground = selectedColor,
                 navigationIconClick = {
                     viewModel?.resetState()
                     navController.navigateUp()
@@ -81,17 +89,23 @@ fun NoteAddScreen(
                     if (title.isNotEmpty() && content.isNotEmpty()) {
                         isErrorTitle = false
                         isErrorContent = false
-                        if (noteId != "-1") {
+                        if (noteId != NEW_NOTE) {
                             viewModel?.updateNote(
                                 NoteEntity(
                                     noteId = noteId ?: "",
                                     title = title,
-                                    content = content
+                                    content = content,
+                                    color = colorToHex(selectedColor)
                                 )
                             )
                         } else {
                             val randomId = Random.nextInt(1, Int.MAX_VALUE).toString()
-                            val noteEntity = NoteEntity(noteId = randomId, title = title, content = content)
+                            val noteEntity = NoteEntity(
+                                noteId = randomId,
+                                title = title,
+                                content = content,
+                                color = colorToHex(selectedColor)
+                            )
 
                             viewModel?.addNote(noteEntity)
                         }
@@ -103,11 +117,13 @@ fun NoteAddScreen(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
+                .background(selectedColor)
                 .padding(horizontal = 16.dp)
                 .padding(top = paddingValues.calculateTopPadding()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+
+            Spacer(modifier = Modifier.height(24.dp))
             OutlinedTextField(
                 value = title,
                 onValueChange = {
@@ -152,7 +168,12 @@ fun NoteAddScreen(
                 isError = isErrorContent
             )
 
-            if (noteId != "-1") {
+            Spacer(modifier = Modifier.height(24.dp))
+            NoteColorPicker {
+                selectedColor = it
+            }
+
+            if (noteId != NEW_NOTE) {
                 Spacer(modifier = Modifier.height(24.dp))
                 Button(
                     modifier = Modifier.fillMaxWidth(0.5f),
@@ -188,9 +209,7 @@ fun NoteAddScreen(
                 }
             }
 
-            is Resource.Loading -> {
-                NoteLoading()
-            }
+            is Resource.Loading -> NoteLoading()
 
             is Resource.Success -> {
                 viewModel.resetState()
@@ -198,6 +217,6 @@ fun NoteAddScreen(
             }
         }
     }
-
 }
+
 

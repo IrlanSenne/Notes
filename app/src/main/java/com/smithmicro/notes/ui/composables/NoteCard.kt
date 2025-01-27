@@ -1,5 +1,6 @@
 package com.smithmicro.notes.ui.composables
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -13,6 +14,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.smithmicro.notes.data.entities.NoteEntity
+import com.smithmicro.notes.utils.hexToColor
 
 @Composable
 fun NoteCard(
@@ -29,7 +31,10 @@ fun NoteCard(
             },
         elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
-        Column(modifier = Modifier.padding(16.dp)) {
+        Column(modifier = Modifier
+            .fillMaxWidth()
+            .background(hexToColor(note.color))
+            .padding(16.dp)) {
             Text(
                 text = note.title,
                 style = MaterialTheme.typography.titleLarge

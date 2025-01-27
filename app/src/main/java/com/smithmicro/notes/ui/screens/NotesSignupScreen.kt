@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -28,19 +30,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.smithmicro.notes.MainViewModel
 import com.smithmicro.notes.R
 import com.smithmicro.notes.Routes
+import com.smithmicro.notes.Routes.Companion.NEW_NOTE
 import com.smithmicro.notes.data.Resource
+import com.smithmicro.notes.data.entities.NoteEntity
 import com.smithmicro.notes.ui.composables.NoteLoading
+import com.smithmicro.notes.ui.composables.NoteTopBar
 import com.smithmicro.notes.ui.composables.NotesTextField
+import com.smithmicro.notes.utils.colorToHex
 import kotlinx.coroutines.launch
+import kotlin.random.Random
 
 @Composable
 fun NotesSignupScreen(
@@ -59,64 +69,109 @@ fun NotesSignupScreen(
     val focusManager = LocalFocusManager.current
 
     Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
+        topBar = {
+            NoteTopBar(
+                colorIcon = Color.White,
+                colorBackground = MaterialTheme.colorScheme.primary,
+                navigationIconClick = {
+                    navController.navigateUp()
+                }
+            )
+        }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
-                .padding(horizontal = 16.dp)
-                .clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null
-                ) {
-                    focusManager.clearFocus()
-                },
+                .background(color = MaterialTheme.colorScheme.primary),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
-            Spacer(modifier = Modifier.height(16.dp))
-            Image(
-                painter = painterResource(id = R.drawable.ic_signup),
-                contentDescription = "-",
+            Box(
                 modifier = Modifier
-                    .size(148.dp)
-                    .padding(bottom = 32.dp)
-            )
-
-            NotesTextField(username, { username = it }, stringResource(id = R.string.username))
-
-            Spacer(modifier = Modifier.height(16.dp))
-            NotesTextField(email, { email = it }, stringResource(id = R.string.email))
-
-            Spacer(modifier = Modifier.height(16.dp))
-            NotesTextField(password, { password = it }, stringResource(id = R.string.password), true)
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    hasAttemptedSignup = true
-                    viewModel?.signupUser(username, email, password)
-                    focusManager.clearFocus()
-                }
+                    .fillMaxWidth()
+                    .weight(0.3f)
+                    .background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = stringResource(id = R.string.signup),
-                    style = MaterialTheme.typography.titleMedium
+                Image(
+                    painter = painterResource(id = R.drawable.ic_signup),
+                    colorFilter = ColorFilter.tint(Color.White),
+                    contentDescription = "-",
+                    modifier = Modifier
+                        .size(130.dp)
+                        .padding(bottom = 16.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
-                modifier = Modifier.clickable {
-                    navController.navigateUp()
-                },
-                text = stringResource(id = R.string.already_have_account),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(0.7f)
+                    .background(
+                        color = Color.White,
+                        shape = RoundedCornerShape(topStart = 62.dp)
+                    )
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = MutableInteractionSource(),
+                            indication = null
+                        ) {
+                            focusManager.clearFocus()
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        modifier = Modifier.fillMaxWidth(0.6f),
+                        text = stringResource(R.string.create_new_account),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 32.sp,
+                        fontWeight = FontWeight.Bold,
+                        textAlign = TextAlign.Center
+                    )
+
+                    Spacer(modifier = Modifier.height(36.dp))
+                    NotesTextField(username, { username = it }, stringResource(id = R.string.username))
+
+                    Spacer(modifier = Modifier.height(18.dp))
+                    NotesTextField(email, { email = it }, stringResource(id = R.string.email))
+
+                    Spacer(modifier = Modifier.height(18.dp))
+                    NotesTextField(password, { password = it }, stringResource(id = R.string.password), true)
+
+                    Spacer(modifier = Modifier.height(26.dp))
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            hasAttemptedSignup = true
+                            viewModel?.signupUser(username, email, password)
+                            focusManager.clearFocus()
+                        }
+                    ) {
+                        Text(
+                            text = stringResource(id = R.string.signup),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        modifier = Modifier.clickable {
+                            navController.navigateUp()
+                        },
+                        text = stringResource(id = R.string.already_have_account),
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
         }
 
         authResource?.value?.let {

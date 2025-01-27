@@ -3,6 +3,8 @@ package com.smithmicro.notes.utils
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.toArgb
 import com.google.android.gms.tasks.Task
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.suspendCancellableCoroutine
@@ -33,4 +35,14 @@ fun isInternetAvailable(context: Context): Boolean {
         activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_ETHERNET) -> true
         else -> false
     }
+}
+
+fun hexToColor(hex: String): Color {
+    val colorInt = android.graphics.Color.parseColor(hex)
+    return Color(colorInt)
+}
+
+fun colorToHex(color: Color): String {
+    val argb = color.toArgb()
+    return String.format("#%08X", argb)
 }

@@ -8,6 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.smithmicro.notes.Routes.Companion.NEW_NOTE
 import com.smithmicro.notes.ui.screens.HomeScreen
 import com.smithmicro.notes.ui.screens.NoteAddScreen
 import com.smithmicro.notes.ui.screens.NotesLoginScreen
@@ -66,11 +67,11 @@ fun MainNavigation(mainViewModel: MainViewModel) {
         }
 
         composable(
-            route = "${Routes.ADD}?noteId={noteId}&title={title}&content={content}",
+            route = "${Routes.ADD}?noteId={noteId}&title={title}&content={content}&color={color}",
             arguments = listOf(
                 navArgument("noteId") {
                     type = NavType.StringType
-                    defaultValue = "-1"
+                    defaultValue = NEW_NOTE
                 },
                 navArgument("title") {
                     type = NavType.StringType
@@ -79,6 +80,10 @@ fun MainNavigation(mainViewModel: MainViewModel) {
                 navArgument("content") {
                     type = NavType.StringType
                     defaultValue = ""
+                },
+                navArgument("color") {
+                    type = NavType.StringType
+                    defaultValue = "#FFFFFFFF"
                 }
             ),
             enterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
@@ -86,8 +91,9 @@ fun MainNavigation(mainViewModel: MainViewModel) {
             popEnterTransition = { slideInHorizontally(initialOffsetX = { it }) },
             popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
         ) { backStackEntry ->
-            val noteId = backStackEntry.arguments?.getString("noteId") ?: "-1"
+            val noteId = backStackEntry.arguments?.getString("noteId") ?: NEW_NOTE
             val title = backStackEntry.arguments?.getString("title") ?: ""
+            val color = backStackEntry.arguments?.getString("color") ?: "#FFFFFFFF"
             val content = backStackEntry.arguments?.getString("content")?.let {
                 URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
             } ?: ""
@@ -97,7 +103,8 @@ fun MainNavigation(mainViewModel: MainViewModel) {
                 navController = navController,
                 noteId = noteId,
                 noteTitle = title,
-                noteContent = content
+                noteContent = content,
+                noteColor = color
             )
         }
     }
@@ -109,8 +116,9 @@ class Routes {
         const val SIGNUP = "signup"
         const val HOME = "home"
         const val ADD = "add"
+        const val NEW_NOTE = "-1"
 
-        fun addWithNoteDetails(noteId: String?, title: String?, content: String?) =
-            "$ADD?noteId=$noteId&title=$title&content=${URLEncoder.encode(content, StandardCharsets.UTF_8.toString())}"
+        fun addWithNoteDetails(noteId: String?, title: String?, content: String?, color: String?) =
+            "$ADD?noteId=$noteId&title=$title&content=${URLEncoder.encode(content, StandardCharsets.UTF_8.toString())}&color=${URLEncoder.encode(color, StandardCharsets.UTF_8.toString())}"
     }
 }

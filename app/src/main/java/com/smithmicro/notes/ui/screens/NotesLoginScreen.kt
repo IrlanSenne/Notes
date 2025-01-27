@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -19,6 +21,7 @@ import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,12 +30,16 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.smithmicro.notes.MainViewModel
 import com.smithmicro.notes.R
@@ -44,10 +51,11 @@ import kotlinx.coroutines.launch
 
 @Composable
 fun NotesLoginScreen(viewModel: MainViewModel?, navController: NavController) {
-    var email by remember { mutableStateOf("irlan@gmail.com") }
-    var password by remember { mutableStateOf("123456789") }
 
     val loginFlow = viewModel?.loginFlow?.collectAsState()
+    val savedCredentials = viewModel?.credentialsFlow?.collectAsState(initial = Pair("", ""))?.value
+    var email by remember(savedCredentials) { mutableStateOf(savedCredentials?.first ?: "") }
+    var password by remember(savedCredentials) { mutableStateOf(savedCredentials?.second ?: "") }
 
     var hasAttemptedLogin by remember { mutableStateOf(false) }
     val coroutineScope = rememberCoroutineScope()
@@ -55,68 +63,113 @@ fun NotesLoginScreen(viewModel: MainViewModel?, navController: NavController) {
 
     val focusManager = LocalFocusManager.current
 
+    LaunchedEffect(Unit) {
+        viewModel?.getSavedCredentials()
+    }
+
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
     ) { paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
-                .padding(horizontal = 16.dp)
-                .clickable(
-                    interactionSource = MutableInteractionSource(),
-                    indication = null
-                ) {
-                    focusManager.clearFocus()
-                },
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.Center
+                .background(color = MaterialTheme.colorScheme.primary)
         ) {
-
-            Image(
-                painter = painterResource(id = R.drawable.ic_login),
-                contentDescription = "-",
+            Box(
                 modifier = Modifier
-                    .size(148.dp)
-                    .padding(bottom = 16.dp)
-            )
-            NotesTextField(email, { email = it }, stringResource(R.string.email))
-
-            Spacer(modifier = Modifier.height(16.dp))
-            NotesTextField(
-                password,
-                { password = it },
-                stringResource(R.string.password),
-                true
-            )
-
-            Spacer(modifier = Modifier.height(16.dp))
-            Button(
-                modifier = Modifier.fillMaxWidth(),
-                onClick = {
-                    hasAttemptedLogin = true
-                    viewModel?.loginUser(email, password)
-                    focusManager.clearFocus()
-                },
+                    .fillMaxWidth()
+                    .weight(0.4f)
+                    .background(MaterialTheme.colorScheme.primary),
+                contentAlignment = Alignment.Center
             ) {
-                Text(
-                    text = stringResource(R.string.login),
-                    style = MaterialTheme.typography.titleMedium
+                Image(
+                    painter = painterResource(id = R.drawable.ic_login_person),
+                    colorFilter = ColorFilter.tint(Color.White),
+                    contentDescription = "-",
+                    modifier = Modifier
+                        .size(148.dp)
+                        .padding(bottom = 16.dp)
                 )
             }
 
-            Spacer(modifier = Modifier.height(16.dp))
-            Text(
+            Box(
                 modifier = Modifier
-                    .clickable {
-                        navController.navigate(Routes.SIGNUP)
-                    },
-                text = stringResource(R.string.register),
-                style = MaterialTheme.typography.bodyLarge,
-                textAlign = TextAlign.Center,
-                color = MaterialTheme.colorScheme.onSurface
-            )
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(topEnd = 62.dp))
+                    .weight(0.6f)
+                    .background(color = Color.White)
+                    .padding(16.dp)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable(
+                            interactionSource = MutableInteractionSource(),
+                            indication = null
+                        ) {
+                            focusManager.clearFocus()
+                        },
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
+                ) {
+                    Spacer(modifier = Modifier.height(30.dp))
+                    Text(
+                        text = stringResource(R.string.login),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontSize = 40.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = stringResource(R.string.login_to_continue),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 16.sp,
+                        color = Color.Gray
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                    NotesTextField(email, { email = it }, stringResource(R.string.email))
+
+                    Spacer(modifier = Modifier.height(20.dp))
+                    NotesTextField(
+                        password,
+                        { password = it },
+                        stringResource(R.string.password),
+                        true
+                    )
+
+                    Spacer(modifier = Modifier.height(24.dp))
+                    Button(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            hasAttemptedLogin = true
+                            viewModel?.loginUser(email, password)
+                            focusManager.clearFocus()
+                        },
+                    ) {
+                        Text(
+                            text = stringResource(R.string.login_in),
+                            style = MaterialTheme.typography.titleMedium
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(16.dp))
+                    Text(
+                        modifier = Modifier
+                            .clickable {
+                                navController.navigate(Routes.SIGNUP)
+                            },
+                        text = stringResource(R.string.register),
+                        style = MaterialTheme.typography.bodyLarge,
+                        textAlign = TextAlign.Center,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
         }
+
 
         loginFlow?.value?.let {
             when (it) {
@@ -128,11 +181,7 @@ fun NotesLoginScreen(viewModel: MainViewModel?, navController: NavController) {
                         )
                     }
                 }
-
-                is Resource.Loading -> {
-                    NoteLoading()
-                }
-
+                is Resource.Loading -> NoteLoading()
                 is Resource.Success -> {
                     navController.navigate(Routes.HOME) {
                         popUpTo(Routes.LOGIN) { inclusive = true }

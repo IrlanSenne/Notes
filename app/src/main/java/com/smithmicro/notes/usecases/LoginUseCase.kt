@@ -1,7 +1,7 @@
 package com.smithmicro.notes.usecases
 
 import android.content.Context
-import com.smithmicro.notes.data.AuthRepository
+import com.smithmicro.notes.data.repository.AuthRepository
 import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.data.entities.NoteEntity
 import com.smithmicro.notes.data.entities.UserEntity

@@ -1,17 +1,21 @@
 package com.smithmicro.notes.ui.composables
 
-import androidx.compose.foundation.focusable
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
+import androidx.compose.ui.unit.dp
 
 @Composable
 fun NotesTextField(
@@ -22,7 +26,11 @@ fun NotesTextField(
 ) {
     TextField(
         modifier = Modifier
-            .fillMaxWidth(),
+            .fillMaxWidth()
+            .background(
+                Color.LightGray,
+                shape = RoundedCornerShape(16.dp)
+            ),
         value = text,
         onValueChange = {
             textOnValueChange(it)
@@ -36,6 +44,13 @@ fun NotesTextField(
             autoCorrect = false,
             keyboardType = if (isPassword) KeyboardType.Password else KeyboardType.Email,
             imeAction = ImeAction.Done
+        ),
+        shape = RoundedCornerShape(16.dp),
+        colors = TextFieldDefaults.colors(
+            focusedIndicatorColor = Color.Transparent,
+            unfocusedIndicatorColor = Color.Transparent
         )
     )
 }
+
+

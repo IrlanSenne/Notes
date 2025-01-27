@@ -3,11 +3,12 @@ package com.smithmicro.notes
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.google.firebase.auth.FirebaseUser
-import com.smithmicro.notes.data.AuthRepository
+import com.smithmicro.notes.data.repository.AuthRepository
 import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.data.entities.NoteEntity
 import com.smithmicro.notes.data.entities.UserEntity
 import com.smithmicro.notes.usecases.DeleteNoteUseCase
+import com.smithmicro.notes.usecases.GetCredentialsUseCase
 import com.smithmicro.notes.usecases.GetNotesUseCase
 import com.smithmicro.notes.usecases.LoginUseCase
 import com.smithmicro.notes.usecases.LogoutUseCase
@@ -30,7 +31,8 @@ class MainViewModel @Inject constructor(
     private val updateNoteUseCase: UpdateNoteUseCase,
     private val loginUseCase: LoginUseCase,
     private val logoutUseCase: LogoutUseCase,
-    private val signupUseCase: SignupUseCase
+    private val signupUseCase: SignupUseCase,
+    private val getCredentialsUseCase: GetCredentialsUseCase
 ) : ViewModel() {
     private val _loginFlow = MutableStateFlow<Resource<List<NoteEntity>>?>(null)
     val loginFlow: StateFlow<Resource<List<NoteEntity>>?> = _loginFlow
@@ -49,6 +51,9 @@ class MainViewModel @Inject constructor(
 
     private val _addNoteFlow = MutableStateFlow<Resource<Boolean>?>(null)
     val addNoteFlow: StateFlow<Resource<Boolean>?> = _addNoteFlow.asStateFlow()
+
+    private val _credentialsFlow = MutableStateFlow<Pair<String?, String?>>(Pair(null, null))
+    val credentialsFlow: StateFlow<Pair<String?, String?>> = _credentialsFlow.asStateFlow()
 
     fun addNote(note: NoteEntity) {
         _addNoteFlow.value = Resource.Loading
@@ -156,6 +161,13 @@ class MainViewModel @Inject constructor(
             _addNoteFlow.value = null
             _noteFlow.value = null
             _logoutFlow.value = null
+        }
+    }
+
+    fun getSavedCredentials() {
+        viewModelScope.launch {
+            val credentials = getCredentialsUseCase.execute(Unit)
+            _credentialsFlow.emit(credentials)
         }
     }
 }

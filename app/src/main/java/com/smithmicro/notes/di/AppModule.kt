@@ -1,16 +1,20 @@
 package com.smithmicro.notes.di
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.room.Room
+import androidx.security.crypto.EncryptedSharedPreferences
+import androidx.security.crypto.MasterKeys
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.firestore.FirebaseFirestore
-import com.smithmicro.notes.data.AuthRepository
-import com.smithmicro.notes.data.AuthRepositoryImpl
+import com.smithmicro.notes.data.repository.AuthRepository
+import com.smithmicro.notes.data.repository.AuthRepositoryImpl
 import com.smithmicro.notes.data.localdatabase.NoteDao
 import com.smithmicro.notes.data.localdatabase.NotesDatabase
 import com.smithmicro.notes.data.repository.NotesRepository
 import com.smithmicro.notes.data.repository.NotesRepositoryImpl
 import com.smithmicro.notes.usecases.DeleteNoteUseCase
+import com.smithmicro.notes.usecases.GetCredentialsUseCase
 import com.smithmicro.notes.usecases.GetNoteByIdUseCase
 import com.smithmicro.notes.usecases.GetNotesUseCase
 import com.smithmicro.notes.usecases.LoginUseCase
@@ -47,6 +51,20 @@ object AppModule {
             NotesDatabase::class.java,
             "notes_database"
         ).build()
+    }
+
+    @Provides
+    @Singleton
+    fun provideEncryptedSharedPreferences(@ApplicationContext context: Context): SharedPreferences {
+        val masterKeyAlias = MasterKeys.getOrCreate(MasterKeys.AES256_GCM_SPEC)
+
+        return EncryptedSharedPreferences.create(
+            "login_credentials",
+            masterKeyAlias,
+            context,
+            EncryptedSharedPreferences.PrefKeyEncryptionScheme.AES256_SIV,
+            EncryptedSharedPreferences.PrefValueEncryptionScheme.AES256_GCM
+        )
     }
 
     @Module
@@ -122,5 +140,11 @@ object AppModule {
         @ApplicationContext context: Context
     ): SignupUseCase {
         return SignupUseCase(authRepository, context)
+    }
+
+    @Provides
+    @Singleton
+    fun provideGetCredentialsUseCase(authRepository: AuthRepository): GetCredentialsUseCase {
+        return GetCredentialsUseCase(authRepository)
     }
 }

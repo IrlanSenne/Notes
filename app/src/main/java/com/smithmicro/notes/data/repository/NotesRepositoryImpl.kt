@@ -1,5 +1,6 @@
 package com.smithmicro.notes.data.repository
 
+import android.content.SharedPreferences
 import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.smithmicro.notes.data.entities.NoteEntity
@@ -93,6 +94,7 @@ class NotesRepositoryImpl @Inject constructor(
                     "title" to note.title,
                     "content" to note.content,
                     "timestamp" to note.timestamp,
+                    "color" to note.color,
                     "noteId" to note.noteId
                 )
                 notesCollection.document(note.noteId).set(noteData).await()

@@ -1,7 +1,10 @@
 <resources>
     <string name="app_name">SmithMicro Notes</string>
-    <string name="signup">Signup</string>
+    <string name="signup">Sign up</string>
     <string name="login">Login</string>
+    <string name="login_in">Login in</string>
+    <string name="login_to_continue">Sign in to continue.</string>
+    <string name="create_new_account">Create new Account</string>
     <string name="logout">Logout</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
@@ -14,4 +17,5 @@
     <string name="title">Title</string>
     <string name="content">Content</string>
     <string name="delete">Delete</string>
+    <string name="no_notes_to_display">No notes to display. Tap to add a new one!</string>
 </resources>

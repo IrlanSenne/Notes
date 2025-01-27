@@ -9,5 +9,6 @@ data class NoteEntity(
     var noteId: String = "",
     var title: String = "",
     var content: String = "",
+    val color: String = "#FFFFFFFF",
     val timestamp: Long = System.currentTimeMillis()
 )

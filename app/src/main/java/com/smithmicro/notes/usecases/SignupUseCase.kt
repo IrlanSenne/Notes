@@ -1,8 +1,7 @@
 package com.smithmicro.notes.usecases
 
 import android.content.Context
-import android.util.Log
-import com.smithmicro.notes.data.AuthRepository
+import com.smithmicro.notes.data.repository.AuthRepository
 import com.smithmicro.notes.data.entities.UserEntity
 import com.smithmicro.notes.utils.isInternetAvailable
 import dagger.hilt.android.qualifiers.ApplicationContext
