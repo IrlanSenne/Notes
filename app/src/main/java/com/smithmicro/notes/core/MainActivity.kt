@@ -1,4 +1,4 @@
-package com.smithmicro.notes
+package com.smithmicro.notes.core
 
 import android.annotation.SuppressLint
 import android.os.Bundle
@@ -10,7 +10,6 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.navigation.compose.rememberNavController
 import com.smithmicro.notes.ui.theme.SmithMicroNotesTheme
 import dagger.hilt.android.AndroidEntryPoint
 

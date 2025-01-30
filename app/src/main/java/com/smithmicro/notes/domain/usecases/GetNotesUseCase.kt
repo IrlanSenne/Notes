@@ -1,4 +1,4 @@
-package com.smithmicro.notes.usecases
+package com.smithmicro.notes.domain.usecases
 
 import com.smithmicro.notes.data.entities.NoteEntity
 import com.smithmicro.notes.data.repository.NotesRepository

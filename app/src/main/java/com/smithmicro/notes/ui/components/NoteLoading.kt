@@ -1,4 +1,4 @@
-package com.smithmicro.notes.ui.composables
+package com.smithmicro.notes.ui.components
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box

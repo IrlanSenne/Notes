@@ -1,4 +1,4 @@
-package com.smithmicro.notes
+package com.smithmicro.notes.core
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,14 +7,14 @@ import com.smithmicro.notes.data.repository.AuthRepository
 import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.data.entities.NoteEntity
 import com.smithmicro.notes.data.entities.UserEntity
-import com.smithmicro.notes.usecases.DeleteNoteUseCase
-import com.smithmicro.notes.usecases.GetCredentialsUseCase
-import com.smithmicro.notes.usecases.GetNotesUseCase
-import com.smithmicro.notes.usecases.LoginUseCase
-import com.smithmicro.notes.usecases.LogoutUseCase
-import com.smithmicro.notes.usecases.SaveNoteUseCase
-import com.smithmicro.notes.usecases.SignupUseCase
-import com.smithmicro.notes.usecases.UpdateNoteUseCase
+import com.smithmicro.notes.domain.usecases.DeleteNoteUseCase
+import com.smithmicro.notes.domain.usecases.GetCredentialsUseCase
+import com.smithmicro.notes.domain.usecases.GetNotesUseCase
+import com.smithmicro.notes.domain.usecases.LoginUseCase
+import com.smithmicro.notes.domain.usecases.LogoutUseCase
+import com.smithmicro.notes.domain.usecases.SaveNoteUseCase
+import com.smithmicro.notes.domain.usecases.SignupUseCase
+import com.smithmicro.notes.domain.usecases.UpdateNoteUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

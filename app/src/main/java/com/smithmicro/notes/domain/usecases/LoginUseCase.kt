@@ -1,4 +1,4 @@
-package com.smithmicro.notes.usecases
+package com.smithmicro.notes.domain.usecases
 
 import android.content.Context
 import com.smithmicro.notes.data.repository.AuthRepository

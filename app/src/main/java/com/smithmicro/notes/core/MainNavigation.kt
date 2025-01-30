@@ -1,4 +1,4 @@
-package com.smithmicro.notes
+package com.smithmicro.notes.core
 
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
@@ -8,7 +8,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
-import com.smithmicro.notes.Routes.Companion.NEW_NOTE
+import com.smithmicro.notes.core.Routes.Companion.NEW_NOTE
 import com.smithmicro.notes.ui.screens.HomeScreen
 import com.smithmicro.notes.ui.screens.NoteAddScreen
 import com.smithmicro.notes.ui.screens.NotesLoginScreen

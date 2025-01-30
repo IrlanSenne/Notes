@@ -41,12 +41,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
-import com.smithmicro.notes.MainViewModel
+import com.smithmicro.notes.core.MainViewModel
 import com.smithmicro.notes.R
-import com.smithmicro.notes.Routes
+import com.smithmicro.notes.core.Routes
 import com.smithmicro.notes.data.Resource
-import com.smithmicro.notes.ui.composables.NoteLoading
-import com.smithmicro.notes.ui.composables.NotesTextField
+import com.smithmicro.notes.ui.components.NoteLoading
+import com.smithmicro.notes.ui.components.NotesTextField
 import kotlinx.coroutines.launch
 
 @Composable
