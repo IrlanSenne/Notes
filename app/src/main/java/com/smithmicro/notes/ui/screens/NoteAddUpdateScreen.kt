@@ -38,6 +38,7 @@ import com.smithmicro.notes.data.entities.NoteEntity
 import com.smithmicro.notes.ui.components.NoteColorPicker
 import com.smithmicro.notes.ui.components.NoteLoading
 import com.smithmicro.notes.ui.components.NoteTopBar
+import com.smithmicro.notes.ui.components.NotesOutlinedTextField
 import com.smithmicro.notes.utils.colorToHex
 import com.smithmicro.notes.utils.hexToColor
 import kotlinx.coroutines.launch
@@ -79,36 +80,22 @@ fun NoteAddScreen(
                     navController.navigateUp()
                 },
                 extraIconClick = {
-                    if (title.isEmpty()) {
-                        isErrorTitle = true
-                    }
-                    if (content.isEmpty()) {
-                        isErrorContent = true
-                    }
+                    isErrorTitle = title.isEmpty()
+                    isErrorContent = content.isEmpty()
 
-                    if (title.isNotEmpty() && content.isNotEmpty()) {
-                        isErrorTitle = false
-                        isErrorContent = false
-                        if (noteId != NEW_NOTE) {
-                            viewModel?.updateNote(
-                                NoteEntity(
-                                    noteId = noteId ?: "",
-                                    title = title,
-                                    content = content,
-                                    color = colorToHex(selectedColor)
-                                )
-                            )
-                        } else {
-                            val randomId = Random.nextInt(1, Int.MAX_VALUE).toString()
-                            val noteEntity = NoteEntity(
-                                noteId = randomId,
-                                title = title,
-                                content = content,
-                                color = colorToHex(selectedColor)
-                            )
+                    if (isErrorTitle || isErrorContent) return@NoteTopBar
 
-                            viewModel?.addNote(noteEntity)
-                        }
+                    val noteEntity = NoteEntity(
+                        noteId = noteId.takeIf { it != NEW_NOTE } ?: Random.nextInt(1, Int.MAX_VALUE).toString(),
+                        title = title,
+                        content = content,
+                        color = colorToHex(selectedColor)
+                    )
+
+                    if (noteId != NEW_NOTE) {
+                        viewModel?.updateNote(noteEntity)
+                    } else {
+                        viewModel?.addNote(noteEntity)
                     }
                 }
             )
@@ -122,56 +109,37 @@ fun NoteAddScreen(
                 .padding(top = paddingValues.calculateTopPadding()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-
             Spacer(modifier = Modifier.height(24.dp))
-            OutlinedTextField(
+            NotesOutlinedTextField(
                 value = title,
                 onValueChange = {
                     title = it
-                    if (it.isNotEmpty()) {
-                        isErrorTitle = false
-                    }
+                    if (it.isNotEmpty()) isErrorTitle = false
                 },
-                label = {
-                    Text(
-                        stringResource(R.string.title),
-                        style = TextStyle(fontSize = 24.sp)
-                    )
-                },
+                label = stringResource(R.string.title),
+                isError = isErrorTitle,
+                textStyle = TextStyle(fontSize = 24.sp),
                 modifier = Modifier.fillMaxWidth(),
-                singleLine = true,
-                textStyle = MaterialTheme.typography.titleLarge,
-                isError = isErrorTitle
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-
-            OutlinedTextField(
+            NotesOutlinedTextField(
                 value = content,
                 onValueChange = {
                     content = it
-                    if (it.isNotEmpty()) {
-                        isErrorContent = false
-                    }
+                    if (it.isNotEmpty()) isErrorContent = false
                 },
-                label = {
-                    Text(
-                        stringResource(R.string.content),
-                        style = TextStyle(fontSize = 18.sp),
-                    )
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(200.dp),
-                maxLines = 10,
+                label = stringResource(R.string.content),
+                isError = isErrorContent,
                 textStyle = MaterialTheme.typography.bodyLarge,
-                isError = isErrorContent
+                modifier = Modifier.fillMaxWidth(),
+                maxLines = 10,
+                height = 200.dp
             )
 
             Spacer(modifier = Modifier.height(24.dp))
-            NoteColorPicker {
-                selectedColor = it
-            }
+            NoteColorPicker { selectedColor = it }
 
             if (noteId != NEW_NOTE) {
                 Spacer(modifier = Modifier.height(24.dp))

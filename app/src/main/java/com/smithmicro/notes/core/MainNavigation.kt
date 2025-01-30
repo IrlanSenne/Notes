@@ -9,10 +9,10 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.smithmicro.notes.core.Routes.Companion.NEW_NOTE
+import com.smithmicro.notes.ui.screens.NoteAuthScreen
+import com.smithmicro.notes.ui.screens.AuthType
 import com.smithmicro.notes.ui.screens.HomeScreen
 import com.smithmicro.notes.ui.screens.NoteAddScreen
-import com.smithmicro.notes.ui.screens.NotesLoginScreen
-import com.smithmicro.notes.ui.screens.NotesSignupScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -34,9 +34,10 @@ fun MainNavigation(mainViewModel: MainViewModel) {
             popEnterTransition = { slideInHorizontally(initialOffsetX = { it }) },
             popExitTransition = { slideOutHorizontally(targetOffsetX = { it }) }
         ) {
-            NotesLoginScreen(
+            NoteAuthScreen(
                 viewModel = mainViewModel,
-                navController = navController
+                navController = navController,
+                authType = AuthType.LOGIN
             )
         }
 
@@ -47,9 +48,10 @@ fun MainNavigation(mainViewModel: MainViewModel) {
             popEnterTransition = { slideInHorizontally(initialOffsetX = { -it }) },
             popExitTransition = { slideOutHorizontally(targetOffsetX = { -it }) }
         ) {
-            NotesSignupScreen(
+            NoteAuthScreen(
                 viewModel = mainViewModel,
-                navController = navController
+                navController = navController,
+                authType = AuthType.SIGNUP
             )
         }
 
