@@ -47,6 +47,7 @@ import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.ui.components.NoteLoading
 import com.smithmicro.notes.ui.components.NoteTopBar
 import com.smithmicro.notes.ui.components.NotesTextField
+import com.smithmicro.notes.utils.handleResourceState
 import kotlinx.coroutines.launch
 
 enum class AuthType { LOGIN, SIGNUP }
@@ -60,24 +61,23 @@ fun NoteAuthScreen(
     var username by remember { mutableStateOf("") }
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    var hasAttemptedAuth by remember { mutableStateOf(false) }
+
+    val savedCredentials = viewModel?.credentialsFlow?.collectAsState(initial = Pair("", ""))?.value
+
+    val coroutineScope = rememberCoroutineScope()
+    val snackbarHostState = remember { SnackbarHostState() }
+    val focusManager = LocalFocusManager.current
 
     val authFlow = when (authType) {
         AuthType.LOGIN -> viewModel?.loginFlow?.collectAsState()
         AuthType.SIGNUP -> viewModel?.signupFlow?.collectAsState()
     }
 
-    val savedCredentials = viewModel?.credentialsFlow?.collectAsState(initial = Pair("", ""))?.value
     if (authType == AuthType.LOGIN) {
         email = savedCredentials?.first ?: ""
         password = savedCredentials?.second ?: ""
-    }
 
-    var hasAttemptedAuth by remember { mutableStateOf(false) }
-    val coroutineScope = rememberCoroutineScope()
-    val snackbarHostState = remember { SnackbarHostState() }
-    val focusManager = LocalFocusManager.current
-
-    if (authType == AuthType.LOGIN) {
         LaunchedEffect(Unit) { viewModel?.getSavedCredentials() }
     }
 
@@ -217,5 +217,16 @@ fun NoteAuthScreen(
                 }
             }
         }
+
+        handleResourceState(
+            resource = authFlow?.value,
+            snackbarHostState = snackbarHostState,
+            coroutineScope = coroutineScope,
+            onSuccess = {
+                navController.navigate(Routes.HOME) {
+                    popUpTo(Routes.LOGIN) { inclusive = true }
+                }
+            }
+        )
     }
 }

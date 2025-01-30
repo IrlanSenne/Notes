@@ -40,6 +40,7 @@ import com.smithmicro.notes.ui.components.NoteLoading
 import com.smithmicro.notes.ui.components.NoteTopBar
 import com.smithmicro.notes.ui.components.NotesOutlinedTextField
 import com.smithmicro.notes.utils.colorToHex
+import com.smithmicro.notes.utils.handleResourceState
 import com.smithmicro.notes.utils.hexToColor
 import kotlinx.coroutines.launch
 import java.net.URLDecoder
@@ -166,25 +167,15 @@ fun NoteAddScreen(
         }
     }
 
-    addNoteFlow?.let {
-        when (it) {
-            is Resource.Failure -> {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = it.exception.message.toString(),
-                        actionLabel = "Close"
-                    )
-                }
-            }
-
-            is Resource.Loading -> NoteLoading()
-
-            is Resource.Success -> {
-                viewModel.resetState()
-                navController.popBackStack()
-            }
+    handleResourceState(
+        resource = addNoteFlow,
+        snackbarHostState = snackbarHostState,
+        coroutineScope = coroutineScope,
+        onSuccess = {
+            viewModel?.resetState()
+            navController.popBackStack()
         }
-    }
+    )
 }
 
 

@@ -62,6 +62,7 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.coil)
     implementation(libs.sharedEncrypted)
+    implementation(libs.accompanist.system)
     implementation(libs.androidx.security.crypto.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

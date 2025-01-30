@@ -20,17 +20,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
-import com.smithmicro.notes.core.MainViewModel
 import com.smithmicro.notes.R
+import com.smithmicro.notes.core.MainViewModel
 import com.smithmicro.notes.core.Routes
 import com.smithmicro.notes.core.Routes.Companion.NEW_NOTE
 import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.ui.components.NoteCard
 import com.smithmicro.notes.ui.components.NoteFloatingButton
-import com.smithmicro.notes.ui.components.NoteLoading
 import com.smithmicro.notes.ui.components.NoteTopBar
 import com.smithmicro.notes.ui.components.NotesEmptyWarningBox
-import kotlinx.coroutines.launch
+import com.smithmicro.notes.utils.handleResourceState
 
 @Composable
 fun HomeScreen(
@@ -92,45 +91,20 @@ fun HomeScreen(
         NotesEmptyWarningBox(notes.isEmpty())
     }
 
-    notesFlow?.let {
-        when (it) {
-            is Resource.Failure -> {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = it.exception.message.toString(),
-                        actionLabel = "Close"
-                    )
-                }
-            }
+    handleResourceState(
+        resource = notesFlow,
+        snackbarHostState = snackbarHostState,
+        coroutineScope = coroutineScope
+    )
 
-            is Resource.Loading -> {
-                NoteLoading()
-            }
-
-            else -> {}
-        }
-    }
-
-    logoutFlow?.let {
-        when (it) {
-            is Resource.Loading -> {
-                NoteLoading()
-            }
-
-            is Resource.Success -> {
-                navController.navigate(Routes.LOGIN) {
-                    popUpTo(Routes.LOGIN) { inclusive = true }
-                }
-            }
-
-            is Resource.Failure -> {
-                coroutineScope.launch {
-                    snackbarHostState.showSnackbar(
-                        message = it.exception.message.toString(),
-                        actionLabel = "Close"
-                    )
-                }
+    handleResourceState(
+        resource = logoutFlow,
+        snackbarHostState = snackbarHostState,
+        coroutineScope = coroutineScope,
+        onSuccess = {
+            navController.navigate(Routes.LOGIN) {
+                popUpTo(Routes.LOGIN) { inclusive = true }
             }
         }
-    }
+    )
 }

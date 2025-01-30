@@ -3,10 +3,16 @@ package com.smithmicro.notes.utils
 import android.content.Context
 import android.net.ConnectivityManager
 import android.net.NetworkCapabilities
+import androidx.compose.material3.SnackbarHostState
+import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import com.google.android.gms.tasks.Task
+import com.smithmicro.notes.data.Resource
+import com.smithmicro.notes.ui.components.NoteLoading
+import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlin.coroutines.resumeWithException
 
@@ -45,4 +51,30 @@ fun hexToColor(hex: String): Color {
 fun colorToHex(color: Color): String {
     val argb = color.toArgb()
     return String.format("#%08X", argb)
+}
+
+@Composable
+fun handleResourceState(
+    resource: Resource<Any>?,
+    snackbarHostState: SnackbarHostState,
+    coroutineScope: CoroutineScope,
+    onSuccess: (() -> Unit)? = null
+) {
+    when (resource) {
+        is Resource.Failure -> {
+            coroutineScope.launch {
+                snackbarHostState.showSnackbar(
+                    message = resource.exception.message.toString(),
+                    actionLabel = "Close"
+                )
+            }
+        }
+        is Resource.Loading -> {
+            NoteLoading()
+        }
+        is Resource.Success -> {
+            onSuccess?.invoke()
+        }
+        else -> {}
+    }
 }
