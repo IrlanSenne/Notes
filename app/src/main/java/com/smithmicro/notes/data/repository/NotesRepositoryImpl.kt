@@ -1,7 +1,5 @@
 package com.smithmicro.notes.data.repository
 
-import android.content.SharedPreferences
-import android.util.Log
 import com.google.firebase.firestore.FirebaseFirestore
 import com.smithmicro.notes.data.entities.NoteEntity
 import com.smithmicro.notes.data.localdatabase.NoteDao
@@ -53,7 +51,7 @@ class NotesRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getNoteById(noteId: String): NoteEntity {
+    override suspend fun getNoteById(noteId: String): NoteEntity? {
         return noteDao.getNoteById(noteId)
     }
 

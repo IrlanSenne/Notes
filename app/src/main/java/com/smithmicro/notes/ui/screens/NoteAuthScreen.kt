@@ -37,6 +37,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -47,6 +48,7 @@ import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.ui.components.NoteLoading
 import com.smithmicro.notes.ui.components.NoteTopBar
 import com.smithmicro.notes.ui.components.NotesTextField
+import com.smithmicro.notes.ui.theme.SmithMicroNotesTheme
 import com.smithmicro.notes.utils.handleResourceState
 import kotlinx.coroutines.launch
 
@@ -55,7 +57,7 @@ enum class AuthType { LOGIN, SIGNUP }
 @Composable
 fun NoteAuthScreen(
     viewModel: MainViewModel?,
-    navController: NavController,
+    navController: NavController?,
     authType: AuthType
 ) {
     var username by remember { mutableStateOf("") }
@@ -88,7 +90,7 @@ fun NoteAuthScreen(
                 NoteTopBar(
                     colorIcon = Color.White,
                     colorBackground = MaterialTheme.colorScheme.primary,
-                    navigationIconClick = { navController.navigateUp() }
+                    navigationIconClick = { navController?.navigateUp() }
                 )
             }
         }
@@ -185,9 +187,9 @@ fun NoteAuthScreen(
                     Text(
                         modifier = Modifier.clickable {
                             if (authType == AuthType.LOGIN) {
-                                navController.navigate(Routes.SIGNUP)
+                                navController?.navigate(Routes.SIGNUP)
                             } else {
-                                navController.navigateUp()
+                                navController?.navigateUp()
                             }
                         },
                         text = stringResource(if (authType == AuthType.LOGIN) R.string.register else R.string.already_have_account),
@@ -211,7 +213,7 @@ fun NoteAuthScreen(
                 }
                 is Resource.Loading -> NoteLoading()
                 is Resource.Success -> {
-                    navController.navigate(Routes.HOME) {
+                    navController?.navigate(Routes.HOME) {
                         popUpTo(Routes.LOGIN) { inclusive = true }
                     }
                 }
@@ -223,10 +225,26 @@ fun NoteAuthScreen(
             snackbarHostState = snackbarHostState,
             coroutineScope = coroutineScope,
             onSuccess = {
-                navController.navigate(Routes.HOME) {
+                navController?.navigate(Routes.HOME) {
                     popUpTo(Routes.LOGIN) { inclusive = true }
                 }
             }
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoteLOGINAuthScreenPreview() {
+    SmithMicroNotesTheme {
+        NoteAuthScreen(null, null, AuthType.LOGIN)
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoteSIGNUPAuthScreenPreview() {
+    SmithMicroNotesTheme {
+        NoteAuthScreen(null, null, AuthType.SIGNUP)
     }
 }

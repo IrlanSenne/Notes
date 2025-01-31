@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.smithmicro.notes.R
@@ -23,7 +24,9 @@ import com.smithmicro.notes.R
 fun NotesEmptyWarningBox(hasNotNotes: Boolean) {
     if (hasNotNotes) {
         Column(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 20.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center
         ) {
@@ -40,7 +43,8 @@ fun NotesEmptyWarningBox(hasNotNotes: Boolean) {
                 text = stringResource(R.string.no_notes_to_display),
                 style = MaterialTheme.typography.bodySmall,
                 fontSize = 16.sp,
-                color = Color.Gray
+                color = Color.Gray,
+                textAlign = TextAlign.Center
             )
         }
     }

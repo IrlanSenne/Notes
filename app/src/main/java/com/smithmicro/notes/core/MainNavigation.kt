@@ -12,7 +12,7 @@ import com.smithmicro.notes.core.Routes.Companion.NEW_NOTE
 import com.smithmicro.notes.ui.screens.NoteAuthScreen
 import com.smithmicro.notes.ui.screens.AuthType
 import com.smithmicro.notes.ui.screens.HomeScreen
-import com.smithmicro.notes.ui.screens.NoteAddScreen
+import com.smithmicro.notes.ui.screens.NoteAddUpdateScreen
 import java.net.URLEncoder
 import java.nio.charset.StandardCharsets
 
@@ -100,7 +100,7 @@ fun MainNavigation(mainViewModel: MainViewModel) {
                 URLEncoder.encode(it, StandardCharsets.UTF_8.toString())
             } ?: ""
 
-            NoteAddScreen(
+            NoteAddUpdateScreen(
                 viewModel = mainViewModel,
                 navController = navController,
                 noteId = noteId,

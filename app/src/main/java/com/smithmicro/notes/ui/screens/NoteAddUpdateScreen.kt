@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
@@ -27,6 +26,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -36,21 +36,20 @@ import com.smithmicro.notes.core.Routes.Companion.NEW_NOTE
 import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.data.entities.NoteEntity
 import com.smithmicro.notes.ui.components.NoteColorPicker
-import com.smithmicro.notes.ui.components.NoteLoading
 import com.smithmicro.notes.ui.components.NoteTopBar
 import com.smithmicro.notes.ui.components.NotesOutlinedTextField
+import com.smithmicro.notes.ui.theme.SmithMicroNotesTheme
 import com.smithmicro.notes.utils.colorToHex
 import com.smithmicro.notes.utils.handleResourceState
 import com.smithmicro.notes.utils.hexToColor
-import kotlinx.coroutines.launch
 import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import kotlin.random.Random
 
 @Composable
-fun NoteAddScreen(
+fun NoteAddUpdateScreen(
     viewModel: MainViewModel? = null,
-    navController: NavController,
+    navController: NavController?,
     noteId: String? = null,
     noteTitle: String? = null,
     noteContent: String? = null,
@@ -78,7 +77,7 @@ fun NoteAddScreen(
                 colorBackground = selectedColor,
                 navigationIconClick = {
                     viewModel?.resetState()
-                    navController.navigateUp()
+                    navController?.navigateUp()
                 },
                 extraIconClick = {
                     isErrorTitle = title.isEmpty()
@@ -173,9 +172,17 @@ fun NoteAddScreen(
         coroutineScope = coroutineScope,
         onSuccess = {
             viewModel?.resetState()
-            navController.popBackStack()
+            navController?.popBackStack()
         }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoteAddUpdateScreen() {
+    SmithMicroNotesTheme {
+        NoteAddUpdateScreen(null, null, "12345", "SmithMicro", "Content Description test")
+    }
 }
 
 

@@ -23,7 +23,7 @@ android {
     }
 
     buildTypes {
-        release {
+          release {
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -41,6 +41,13 @@ android {
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+    packagingOptions {
+        exclude("META-INF/LICENSE-notice.md")
+        exclude("META-INF/LICENSE.md")
+        exclude("META-INF/*.RSA")
+        exclude("META-INF/*.SF")
+        exclude("META-INF/*.DSA")
     }
 }
 
@@ -62,10 +69,17 @@ dependencies {
     implementation(libs.firebase.firestore)
     implementation(libs.coil)
     implementation(libs.sharedEncrypted)
-    implementation(libs.accompanist.system)
     implementation(libs.androidx.security.crypto.ktx)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
+    testImplementation(libs.mockito.core)
+    testImplementation(libs.mockito.inline)
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    androidTestImplementation(libs.mockk.android)
+    androidTestImplementation(libs.mockito.android)
+    androidTestImplementation(libs.mockito.kotlin)
+    androidTestImplementation(libs.arch.core.testing)
     androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.ui.test.junit4)

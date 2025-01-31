@@ -18,6 +18,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.smithmicro.notes.R
@@ -29,12 +30,13 @@ import com.smithmicro.notes.ui.components.NoteCard
 import com.smithmicro.notes.ui.components.NoteFloatingButton
 import com.smithmicro.notes.ui.components.NoteTopBar
 import com.smithmicro.notes.ui.components.NotesEmptyWarningBox
+import com.smithmicro.notes.ui.theme.SmithMicroNotesTheme
 import com.smithmicro.notes.utils.handleResourceState
 
 @Composable
 fun HomeScreen(
     viewModel: MainViewModel?,
-    navController: NavController
+    navController: NavController?
 ) {
     val snackbarHostState = remember { SnackbarHostState() }
     val coroutineScope = rememberCoroutineScope()
@@ -58,7 +60,7 @@ fun HomeScreen(
         },
         floatingActionButton = {
             NoteFloatingButton() {
-                navController.navigate(Routes.addWithNoteDetails(NEW_NOTE,"","", "#FFFFFFFF"))
+                navController?.navigate(Routes.addWithNoteDetails(NEW_NOTE,"","", "#FFFFFFFF"))
             }
         }
     ) { paddingValues ->
@@ -72,7 +74,7 @@ fun HomeScreen(
         ) {
             itemsIndexed(notes) { index, note ->
                 NoteCard(note = note) {
-                    navController.navigate(
+                    navController?.navigate(
                         Routes.addWithNoteDetails(
                             noteId = note.noteId,
                             title = note.title,
@@ -102,9 +104,17 @@ fun HomeScreen(
         snackbarHostState = snackbarHostState,
         coroutineScope = coroutineScope,
         onSuccess = {
-            navController.navigate(Routes.LOGIN) {
+            navController?.navigate(Routes.LOGIN) {
                 popUpTo(Routes.LOGIN) { inclusive = true }
             }
         }
     )
+}
+
+@Preview(showBackground = true)
+@Composable
+fun NoteHomeScreenPreview() {
+    SmithMicroNotesTheme {
+        HomeScreen(null, null)
+    }
 }
