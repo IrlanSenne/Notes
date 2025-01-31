@@ -44,13 +44,10 @@ import androidx.navigation.NavController
 import com.smithmicro.notes.core.MainViewModel
 import com.smithmicro.notes.R
 import com.smithmicro.notes.core.Routes
-import com.smithmicro.notes.data.Resource
-import com.smithmicro.notes.ui.components.NoteLoading
 import com.smithmicro.notes.ui.components.NoteTopBar
 import com.smithmicro.notes.ui.components.NotesTextField
 import com.smithmicro.notes.ui.theme.SmithMicroNotesTheme
 import com.smithmicro.notes.utils.handleResourceState
-import kotlinx.coroutines.launch
 
 enum class AuthType { LOGIN, SIGNUP }
 
@@ -105,7 +102,7 @@ fun NoteAuthScreen(
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.3f)
+                    .weight(0.35f)
                     .background(MaterialTheme.colorScheme.primary),
                 contentAlignment = Alignment.Center
             ) {
@@ -119,114 +116,95 @@ fun NoteAuthScreen(
                 )
             }
 
-            Box(
+            Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(0.7f)
-                    .background(Color.White, shape = RoundedCornerShape(topStart = 62.dp, topEnd = 62.dp))
-                    .padding(16.dp)
+                    .weight(0.65f)
+                    .background(
+                        Color.White,
+                        shape = RoundedCornerShape(topStart = 62.dp, topEnd = 62.dp)
+                    )
+                    .padding(horizontal = 16.dp)
+                    .clickable(
+                        interactionSource = MutableInteractionSource(),
+                        indication = null
+                    ) { focusManager.clearFocus() },
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .clickable(
-                            interactionSource = MutableInteractionSource(),
-                            indication = null
-                        ) { focusManager.clearFocus() },
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    verticalArrangement = Arrangement.Center
-                ) {
-                    Spacer(modifier = Modifier.height(30.dp))
+                Spacer(modifier = Modifier.height(30.dp))
+                Text(
+                    text = stringResource(if (authType == AuthType.LOGIN) R.string.login else R.string.create_new_account),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontSize = if (authType == AuthType.LOGIN) 40.sp else 32.sp,
+                    fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Center
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+                if (authType == AuthType.LOGIN) {
                     Text(
-                        text = stringResource(if (authType == AuthType.LOGIN) R.string.login else R.string.create_new_account),
-                        style = MaterialTheme.typography.titleLarge,
-                        fontSize = if (authType == AuthType.LOGIN) 40.sp else 32.sp,
-                        fontWeight = FontWeight.Bold,
-                        textAlign = TextAlign.Center
+                        text = stringResource(R.string.login_to_continue),
+                        style = MaterialTheme.typography.bodySmall,
+                        fontSize = 16.sp,
+                        color = Color.Gray
                     )
+                }
 
-                    Spacer(modifier = Modifier.height(12.dp))
-                    if (authType == AuthType.LOGIN) {
-                        Text(
-                            text = stringResource(R.string.login_to_continue),
-                            style = MaterialTheme.typography.bodySmall,
-                            fontSize = 16.sp,
-                            color = Color.Gray
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-                    if (authType == AuthType.SIGNUP) {
-                        NotesTextField(username, { username = it }, stringResource(R.string.username))
-                        Spacer(modifier = Modifier.height(18.dp))
-                    }
-                    NotesTextField(email, { email = it }, stringResource(R.string.email))
+                Spacer(modifier = Modifier.height(24.dp))
+                if (authType == AuthType.SIGNUP) {
+                    NotesTextField(username, { username = it }, stringResource(R.string.username))
                     Spacer(modifier = Modifier.height(18.dp))
-                    NotesTextField(password, { password = it }, stringResource(R.string.password), true)
+                }
+                NotesTextField(email, { email = it }, stringResource(R.string.email))
+                Spacer(modifier = Modifier.height(18.dp))
+                NotesTextField(password, { password = it }, stringResource(R.string.password), true)
 
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Button(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {
-                            hasAttemptedAuth = true
-                            if (authType == AuthType.LOGIN) {
-                                viewModel?.loginUser(email, password)
-                            } else {
-                                viewModel?.signupUser(username, email, password)
-                            }
-                            focusManager.clearFocus()
+                Spacer(modifier = Modifier.height(24.dp))
+                Button(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        hasAttemptedAuth = true
+                        if (authType == AuthType.LOGIN) {
+                            viewModel?.loginUser(email, password)
+                        } else {
+                            viewModel?.signupUser(username, email, password)
                         }
-                    ) {
-                        Text(
-                            text = stringResource(if (authType == AuthType.LOGIN) R.string.login_in else R.string.signup),
-                            style = MaterialTheme.typography.titleMedium
-                        )
+                        focusManager.clearFocus()
                     }
-
-                    Spacer(modifier = Modifier.height(16.dp))
+                ) {
                     Text(
-                        modifier = Modifier.clickable {
-                            if (authType == AuthType.LOGIN) {
-                                navController?.navigate(Routes.SIGNUP)
-                            } else {
-                                navController?.navigateUp()
-                            }
-                        },
-                        text = stringResource(if (authType == AuthType.LOGIN) R.string.register else R.string.already_have_account),
-                        style = MaterialTheme.typography.bodyLarge,
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurface
+                        text = stringResource(if (authType == AuthType.LOGIN) R.string.login_in else R.string.signup),
+                        style = MaterialTheme.typography.titleMedium
                     )
                 }
-            }
-        }
 
-        authFlow?.value?.let {
-            when (it) {
-                is Resource.Failure -> {
-                    coroutineScope.launch {
-                        snackbarHostState.showSnackbar(
-                            message = it.exception.message.toString(),
-                            actionLabel = "Close"
-                        )
-                    }
-                }
-                is Resource.Loading -> NoteLoading()
-                is Resource.Success -> {
-                    navController?.navigate(Routes.HOME) {
-                        popUpTo(Routes.LOGIN) { inclusive = true }
-                    }
-                }
+                Spacer(modifier = Modifier.height(16.dp))
+                Text(
+                    modifier = Modifier.clickable {
+                        if (authType == AuthType.LOGIN) {
+                            navController?.navigate(Routes.SIGNUP)
+                        } else {
+                            navController?.navigateUp()
+                        }
+                    },
+                    text = stringResource(if (authType == AuthType.LOGIN) R.string.register else R.string.already_have_account),
+                    style = MaterialTheme.typography.bodyLarge,
+                    textAlign = TextAlign.Center,
+                    color = MaterialTheme.colorScheme.onSurface
+                )
             }
+
         }
 
         handleResourceState(
+            hasAttempted = hasAttemptedAuth,
+            hasAttemptedChange = { hasAttemptedAuth = false },
             resource = authFlow?.value,
-            snackbarHostState = snackbarHostState,
+            snackBarHostState = snackbarHostState,
             coroutineScope = coroutineScope,
             onSuccess = {
                 navController?.navigate(Routes.HOME) {
-                    popUpTo(Routes.LOGIN) { inclusive = true }
+                    popUpTo(Routes.HOME) { inclusive = true }
                 }
             }
         )

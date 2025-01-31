@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.smithmicro.notes.core.MainViewModel
 import com.smithmicro.notes.R
+import com.smithmicro.notes.core.Routes
 import com.smithmicro.notes.core.Routes.Companion.NEW_NOTE
 import com.smithmicro.notes.data.Resource
 import com.smithmicro.notes.data.entities.NoteEntity
@@ -168,7 +169,7 @@ fun NoteAddUpdateScreen(
 
     handleResourceState(
         resource = addNoteFlow,
-        snackbarHostState = snackbarHostState,
+        snackBarHostState = snackbarHostState,
         coroutineScope = coroutineScope,
         onSuccess = {
             viewModel?.resetState()

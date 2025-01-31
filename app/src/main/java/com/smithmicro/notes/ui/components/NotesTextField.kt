@@ -23,12 +23,13 @@ fun NotesTextField(
     textOnValueChange: (String) -> Unit,
     label: String,
     isPassword: Boolean = false,
+    errorMessage: String? = null
 ) {
     TextField(
         modifier = Modifier
             .fillMaxWidth()
             .background(
-                Color.LightGray,
+                if (errorMessage != null) Color.Red else Color.LightGray,
                 shape = RoundedCornerShape(16.dp)
             ),
         value = text,
@@ -38,6 +39,7 @@ fun NotesTextField(
         label = {
             Text(text = label)
         },
+        isError = errorMessage != null,
         visualTransformation = if (isPassword) PasswordVisualTransformation() else VisualTransformation.None,
         keyboardOptions = KeyboardOptions(
             capitalization = KeyboardCapitalization.None,
@@ -47,8 +49,8 @@ fun NotesTextField(
         ),
         shape = RoundedCornerShape(16.dp),
         colors = TextFieldDefaults.colors(
-            focusedIndicatorColor = Color.Transparent,
-            unfocusedIndicatorColor = Color.Transparent
+            focusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent,
+            unfocusedIndicatorColor = if (errorMessage != null) Color.Red else Color.Transparent
         )
     )
 }

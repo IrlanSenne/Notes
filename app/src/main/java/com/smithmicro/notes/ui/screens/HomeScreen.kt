@@ -95,13 +95,13 @@ fun HomeScreen(
 
     handleResourceState(
         resource = notesFlow,
-        snackbarHostState = snackbarHostState,
+        snackBarHostState = snackbarHostState,
         coroutineScope = coroutineScope
     )
 
     handleResourceState(
         resource = logoutFlow,
-        snackbarHostState = snackbarHostState,
+        snackBarHostState = snackbarHostState,
         coroutineScope = coroutineScope,
         onSuccess = {
             navController?.navigate(Routes.LOGIN) {

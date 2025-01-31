@@ -119,16 +119,20 @@ class MainViewModel @Inject constructor(
     fun signupUser(name: String, email: String, password: String) {
         viewModelScope.launch {
             _signupFlow.value = Resource.Loading
+
             try {
-                signupUseCase.execute(UserEntity(name, email, password))
-                    .collect { isSuccess ->
-                        if (isSuccess) {
+                signupUseCase.execute(UserEntity(name, email, password)).collect { resource ->
+                    when (resource) {
+                        is Resource.Success -> {
                             _logoutFlow.value = null
                             _signupFlow.value = Resource.Success(true)
-                        } else {
-                            _signupFlow.value = Resource.Failure(Exception("Signup failed"))
                         }
+                        is Resource.Failure -> {
+                            _signupFlow.value = Resource.Failure(resource.exception)
+                        }
+                        else -> {}
                     }
+                }
             } catch (e: Exception) {
                 _signupFlow.value = Resource.Failure(e)
             }

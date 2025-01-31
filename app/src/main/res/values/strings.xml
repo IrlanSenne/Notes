@@ -18,4 +18,12 @@
     <string name="content">Content</string>
     <string name="delete">Delete</string>
     <string name="no_notes_to_display">No notes to display. Tap to add a new one!</string>
+    <string name="error_invalid_email">Invalid email.</string>
+    <string name="error_invalid_password">Invalid password.</string>
+    <string name="error_user_not_found">User not found.</string>
+    <string name="error_incorrect_credentials">Incorrect credentials.</string>
+    <string name="error_no_internet_connection">No internet connection.</string>
+    <string name="error_unknown">Unknown error.</string>
+    <string name="error_weak_password">Password is too weak</string>
+    <string name="error_email_already_registered">Email already registered</string>
 </resources>

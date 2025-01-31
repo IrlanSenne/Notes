@@ -7,8 +7,11 @@ import androidx.compose.material3.SnackbarHostState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.res.stringResource
 import com.google.android.gms.tasks.Task
+import com.smithmicro.notes.R
 import com.smithmicro.notes.data.Resource
+import com.smithmicro.notes.data.exception.AuthException
 import com.smithmicro.notes.ui.components.NoteLoading
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -55,26 +58,35 @@ fun colorToHex(color: Color): String {
 
 @Composable
 fun handleResourceState(
+    hasAttempted: Boolean = true,
+    hasAttemptedChange: () -> Unit = {},
     resource: Resource<Any>?,
-    snackbarHostState: SnackbarHostState,
+    snackBarHostState: SnackbarHostState,
     coroutineScope: CoroutineScope,
     onSuccess: (() -> Unit)? = null
 ) {
-    when (resource) {
-        is Resource.Failure -> {
-            coroutineScope.launch {
-                snackbarHostState.showSnackbar(
-                    message = resource.exception.message.toString(),
-                    actionLabel = "Close"
-                )
+    if (hasAttempted) {
+        when (resource) {
+            is Resource.Failure -> {
+                val errorMessage = when (val exception = resource.exception) {
+                    is AuthException -> {
+                        stringResource(id = exception.messageResId)
+                    }
+                    else -> stringResource(id = R.string.error_unknown)
+                }
+
+                coroutineScope.launch {
+                    snackBarHostState.showSnackbar(
+                        message = errorMessage,
+                        actionLabel = "Close"
+                    )
+                    hasAttemptedChange()
+                }
             }
+            is Resource.Loading -> NoteLoading()
+            is Resource.Success -> onSuccess?.invoke()
+            else -> {}
         }
-        is Resource.Loading -> {
-            NoteLoading()
-        }
-        is Resource.Success -> {
-            onSuccess?.invoke()
-        }
-        else -> {}
     }
 }
+
